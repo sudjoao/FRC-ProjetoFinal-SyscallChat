@@ -24,7 +24,7 @@ class ChatRoom:
         print(f'Participante {participant.name} saiu da sala')
 
     def list_participants(self):
-        print(f'---Sala {self.name}---')
+        print(f'---Sala {self.name} ({len(self.participants)}/{self.max_participants})---')
         for i, participant in enumerate(self.participants):
-            print(f'\tParticipante {i}: {participant.name}')
+            print(f'\tParticipante {i+1}: {participant.name}')
         print('\n\n')
