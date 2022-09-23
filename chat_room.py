@@ -1,3 +1,6 @@
+import select
+from socket import socket
+import sys
 from participant import Participant
 
 
@@ -6,12 +9,27 @@ class ChatRoom:
     max_participants: int
     participants: list
     owner: Participant
+    chat_socket: socket
+    port: int
 
     def __init__(self, name, max_participants, owner: Participant) -> None:
         self.name = name
         self.max_participants = max_participants
         self.participants = [owner]
         self.owner = owner
+
+    def init_chat(self):
+        self.chat_socket = socket()
+        self.chat_socket.connect(('localhost', 1234))
+        while True:
+            readers, _, _ = select.select([sys.stdin, self.chat_socket], [], [])
+            for reader in readers:
+                if reader is self.chat_socket:
+                    print(self.chat_socket.recv(1000).decode('utf-8'))
+                else:
+                    msg = sys.stdin.readline()
+                    sended_msg = f'{self.owner.name}: {msg}' 
+                    self.chat_socket.send(sended_msg.encode('utf-8'))
     
     def join_room(self, participant: Participant):
         if len(self.participants) < self.max_participants:
