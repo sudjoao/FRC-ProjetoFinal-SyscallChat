@@ -26,7 +26,7 @@ class ChatRoom:
         self.chat_socket.bind(('localhost', self.port))
         self.chat_socket.listen(self.max_participants)
         self.inputs = [sys.stdin, self.chat_socket]
-        while self.inputs: 
+        while self.inputs:
             readers, _, _ = select.select(self.inputs, [], [])
             for reader in readers:
                 if reader is self.chat_socket:
@@ -37,18 +37,18 @@ class ChatRoom:
                     msg = reader.recv(1024).decode('utf-8')
                     if not msg: break
                     print(f'{msg}')
-                    for i, input in enumerate(self.inputs):
-                        if i  > 1 and reader != input:
-                            input.sendall(msg.encode('utf-8'))
+                    self.send_message(msg, reader)
                 else:
                     msg = sys.stdin.readline()
                     sended_msg = f'{self.owner.name}: {msg[:-1]}'
-                    for i, input in enumerate(self.inputs):
-                        if i  > 1 and reader != input:
-                            input.sendall(sended_msg.encode('utf-8'))
+                    self.send_message(sended_msg, reader)
 
-        
-    
+    def send_message(self, msg:str, reader: socket.socket):
+        for i, input in enumerate(self.inputs):
+            if i  > 1 and reader != input:
+                input.sendall(msg.encode('utf-8'))
+
+
     def join_room(self, participant: Participant):
         if len(self.participants) < self.max_participants:
             self.participants.append(participant)
