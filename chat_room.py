@@ -30,28 +30,34 @@ class ChatRoom:
             readers, _, _ = select.select(self.inputs, [], [])
             for reader in readers:
                 if reader is self.chat_socket:
-                    connection, _ = reader.accept()
-                    connection.setblocking(0)
-                    self.inputs.append(connection)
+                    self.join_room(reader)
                 elif isinstance(reader, socket.socket):
-                    msg = reader.recv(1024).decode('utf-8')
-                    if not msg: break
-                    print(f'{msg}')
-                    self.send_message(msg, reader)
+                    self.read_message(reader)
                 else:
-                    msg = sys.stdin.readline()
-                    sended_msg = f'{self.owner.name}: {msg[:-1]}'
-                    self.send_message(sended_msg, reader)
+                    self.type_message(reader)
+
+    def read_message(self, reader: socket.socket):
+        msg = reader.recv(1024).decode('utf-8')
+        if msg:
+            print(f'{msg}')
+            self.send_message(msg, reader)
+
+    def type_message(self, reader: socket.socket):
+        msg = sys.stdin.readline()
+        sended_msg = f'{self.owner.name}: {msg[:-1]}'
+        self.send_message(sended_msg, reader)
 
     def send_message(self, msg:str, reader: socket.socket):
         for i, input in enumerate(self.inputs):
             if i  > 1 and reader != input:
                 input.sendall(msg.encode('utf-8'))
 
-
-    def join_room(self, participant: Participant):
+    def join_room(self, reader: socket.socket):
         if len(self.participants) < self.max_participants:
-            self.participants.append(participant)
+            connection, _ = reader.accept()
+            connection.setblocking(0)
+            self.inputs.append(connection)
+            # TODO adicionar nome do participante a lista quando protocolo estiver pronto
         else:
             print(f"Essa sala já possui {self.max_participants} participantes. Espere alguém sair ou tente entrar em outra sala.")
 
