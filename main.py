@@ -13,7 +13,11 @@ def main():
     room = ChatRoom(channel, max_participants, participant)
     channels.append(room)
     room.list_participants()
-    room.init_chat()
+    option = input('Digite a opcao:\n1. Iniciar Sala\n2. Entrar em uma sala\n')
+    if option == '1':
+        room.init_chat()
+    else:
+        participant.join_chat()
             
 
 if __name__ == '__main__':

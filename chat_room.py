@@ -1,6 +1,7 @@
 import select
 from socket import socket
 import sys
+import json
 from participant import Participant
 
 
@@ -20,16 +21,16 @@ class ChatRoom:
 
     def init_chat(self):
         self.chat_socket = socket()
-        self.chat_socket.connect(('localhost', 1234))
-        while True:
-            readers, _, _ = select.select([sys.stdin, self.chat_socket], [], [])
-            for reader in readers:
-                if reader is self.chat_socket:
-                    print(self.chat_socket.recv(1000).decode('utf-8'))
-                else:
-                    msg = sys.stdin.readline()
-                    sended_msg = f'{self.owner.name}: {msg}' 
-                    self.chat_socket.send(sended_msg.encode('utf-8'))
+        self.chat_socket.bind(('localhost', 7890))
+        self.chat_socket.listen(1)
+        while True: 
+            con, cliente = self.chat_socket.accept()
+            print('Concetado por')
+            while True:
+                msg = con.recv(1024).decode('utf-8')
+                if not msg: break
+                print(f'{msg}')
+            con.close()
     
     def join_room(self, participant: Participant):
         if len(self.participants) < self.max_participants:
