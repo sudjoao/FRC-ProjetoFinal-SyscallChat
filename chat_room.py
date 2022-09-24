@@ -22,7 +22,7 @@ class ChatRoom:
     def init_chat(self):
         self.chat_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.chat_socket.setblocking(0)
-        self.chat_socket.bind(('localhost', 7891))
+        self.chat_socket.bind(('localhost', 7892))
         self.chat_socket.listen(self.max_participants)
         self.inputs = [self.chat_socket]
         while self.inputs: 
@@ -36,6 +36,9 @@ class ChatRoom:
                     msg = reader.recv(1024).decode('utf-8')
                     if not msg: break
                     print(f'{msg}')
+                    for i, input in enumerate(self.inputs):
+                        if i  > 0:
+                            input.sendall(msg.encode('utf-8'))
         
     
     def join_room(self, participant: Participant):

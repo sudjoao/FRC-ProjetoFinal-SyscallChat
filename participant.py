@@ -17,7 +17,7 @@ class Participant:
     
     def join_chat(self):
         self.chat_socket = socket.socket()
-        self.chat_socket.connect(('localhost', 7891))
+        self.chat_socket.connect(('localhost', 7892))
         while True:
             readers, _, _ = select.select([sys.stdin, self.chat_socket], [], [])
             for reader in readers:
