@@ -1,5 +1,5 @@
 import select
-from socket import socket
+import socket
 import sys
 import json
 from participant import Participant
@@ -10,7 +10,7 @@ class ChatRoom:
     max_participants: int
     participants: list
     owner: Participant
-    chat_socket: socket
+    chat_socket: socket.socket
     port: int
 
     def __init__(self, name, max_participants, owner: Participant) -> None:
@@ -20,17 +20,23 @@ class ChatRoom:
         self.owner = owner
 
     def init_chat(self):
-        self.chat_socket = socket()
-        self.chat_socket.bind(('localhost', 7890))
-        self.chat_socket.listen(1)
-        while True: 
-            con, cliente = self.chat_socket.accept()
-            print('Concetado por')
-            while True:
-                msg = con.recv(1024).decode('utf-8')
-                if not msg: break
-                print(f'{msg}')
-            con.close()
+        self.chat_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.chat_socket.setblocking(0)
+        self.chat_socket.bind(('localhost', 7891))
+        self.chat_socket.listen(self.max_participants)
+        self.inputs = [self.chat_socket]
+        while self.inputs: 
+            readers, _, _ = select.select(self.inputs, [], [])
+            for reader in readers:
+                if reader is self.chat_socket:
+                    connection, _ = reader.accept()
+                    connection.setblocking(0)
+                    self.inputs.append(connection)
+                elif isinstance(reader, socket.socket):
+                    msg = reader.recv(1024).decode('utf-8')
+                    if not msg: break
+                    print(f'{msg}')
+        
     
     def join_room(self, participant: Participant):
         if len(self.participants) < self.max_participants:

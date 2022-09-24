@@ -8,7 +8,7 @@ def main():
     admin_functions = AdminFunctions()
     name = input('Digite o nome do participante\n')
     channel = input('Digite o nome do canal\n')
-    max_participants = input('Digite o máximo de participantes do canal\n')
+    max_participants = int(input('Digite o máximo de participantes do canal\n'))
     participant = Participant(name, channel)
     room = ChatRoom(channel, max_participants, participant)
     channels.append(room)
