@@ -12,6 +12,7 @@ class ChatRoom:
     owner: Participant
     chat_socket: socket.socket
     port: int
+    inputs: list
 
     def __init__(self, name: str, max_participants: int, owner: Participant, port: int) -> None:
         self.name = name
@@ -39,8 +40,14 @@ class ChatRoom:
     def read_message(self, reader: socket.socket):
         msg = reader.recv(1024).decode('utf-8')
         if msg:
-            print(f'{msg}')
-            self.send_message(msg, reader)
+            json_msg = json.loads(msg)
+            user = json_msg['data']['user']
+            if json_msg['type'] == 'join':
+                self.participants.append(user)
+                print(f'{user} entrou na sala')
+            elif json_msg['type'] == 'send_message':
+                self.send_message(msg, reader)
+            print(f'{user}: {json_msg["data"]["message"]}')
 
     def type_message(self, reader: socket.socket):
         msg = sys.stdin.readline()
@@ -70,3 +77,4 @@ class ChatRoom:
         for i, participant in enumerate(self.participants):
             print(f'\tParticipante {i+1}: {participant.name}')
         print('\n\n')
+

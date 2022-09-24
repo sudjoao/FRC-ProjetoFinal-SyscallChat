@@ -16,7 +16,7 @@ def main():
         room.init_chat()
     else:
         participant.join_chat(port)
-            
+
 
 if __name__ == '__main__':
     main()

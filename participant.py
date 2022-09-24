@@ -1,6 +1,9 @@
 import socket
 import select
 import sys
+from communication import CommunicationProtocol
+
+from data import Data
 
 class Participant:
     name: str
@@ -16,8 +19,7 @@ class Participant:
     def join_chat(self, room_port: int):
         self.chat_socket = socket.socket()
         self.chat_socket.connect(('localhost', room_port))
-        welcome_message = f'{self.name} entrou na sala'
-        self.chat_socket.send(welcome_message.encode('utf-8'))
+        self.send_join_message()
         while True:
             readers, _, _ = select.select([sys.stdin, self.chat_socket], [], [])
             for reader in readers:
@@ -25,5 +27,14 @@ class Participant:
                     print(self.chat_socket.recv(1000).decode('utf-8'))
                 else:
                     msg = sys.stdin.readline()
-                    sended_msg = f'{self.name}: {msg[:-1]}'
-                    self.chat_socket.send(sended_msg.encode('utf-8'))
+                    self.send_message(msg[:-1])
+
+    def send_join_message(self):
+        data = Data(self.name, "")
+        communication_protocol = CommunicationProtocol('join', data)
+        self.chat_socket.send(f'{communication_protocol}'.encode('utf-8'))
+
+    def send_message(self, message):
+        data = Data(self.name, message)
+        communication_protocol = CommunicationProtocol('send_message', data)
+        self.chat_socket.send(f'{communication_protocol}'.encode('utf-8'))
