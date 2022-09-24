@@ -9,13 +9,15 @@ class Participant:
 
     def __init__(self, name: str) -> None:
         self.name = name
-    
+
     def __str__(self) -> str:
         return f'{self.name}'
-    
+
     def join_chat(self, room_port: int):
         self.chat_socket = socket.socket()
         self.chat_socket.connect(('localhost', room_port))
+        welcome_message = f'{self.name} entrou na sala'
+        self.chat_socket.send(welcome_message.encode('utf-8'))
         while True:
             readers, _, _ = select.select([sys.stdin, self.chat_socket], [], [])
             for reader in readers:
@@ -23,5 +25,5 @@ class Participant:
                     print(self.chat_socket.recv(1000).decode('utf-8'))
                 else:
                     msg = sys.stdin.readline()
-                    sended_msg = f'{self.name}: {msg[:-1]}' 
+                    sended_msg = f'{self.name}: {msg[:-1]}'
                     self.chat_socket.send(sended_msg.encode('utf-8'))
