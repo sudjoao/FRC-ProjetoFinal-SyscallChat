@@ -25,7 +25,7 @@ class ChatRoom:
         self.chat_socket.setblocking(0)
         self.chat_socket.bind(('localhost', self.port))
         self.chat_socket.listen(self.max_participants)
-        self.inputs = [self.chat_socket]
+        self.inputs = [sys.stdin, self.chat_socket]
         while self.inputs: 
             readers, _, _ = select.select(self.inputs, [], [])
             for reader in readers:
@@ -38,8 +38,15 @@ class ChatRoom:
                     if not msg: break
                     print(f'{msg}')
                     for i, input in enumerate(self.inputs):
-                        if i  > 0:
+                        if i  > 1 and reader != input:
                             input.sendall(msg.encode('utf-8'))
+                else:
+                    msg = sys.stdin.readline()
+                    sended_msg = f'{self.owner.name}: {msg[:-1]}'
+                    for i, input in enumerate(self.inputs):
+                        if i  > 1 and reader != input:
+                            input.sendall(sended_msg.encode('utf-8'))
+
         
     
     def join_room(self, participant: Participant):
