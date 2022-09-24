@@ -13,16 +13,17 @@ class ChatRoom:
     chat_socket: socket.socket
     port: int
 
-    def __init__(self, name, max_participants, owner: Participant) -> None:
+    def __init__(self, name: str, max_participants: int, owner: Participant, port: int) -> None:
         self.name = name
         self.max_participants = max_participants
         self.participants = [owner]
         self.owner = owner
+        self.port = port
 
     def init_chat(self):
         self.chat_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.chat_socket.setblocking(0)
-        self.chat_socket.bind(('localhost', 7892))
+        self.chat_socket.bind(('localhost', self.port))
         self.chat_socket.listen(self.max_participants)
         self.inputs = [self.chat_socket]
         while self.inputs: 
