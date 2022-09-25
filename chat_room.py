@@ -45,7 +45,9 @@ class ChatRoom:
             user = json_msg['data']['user']
             if json_msg['type'] == 'join':
                 self.participants.append(user)
-                print(f'{user} entrou na sala')
+                inform_msg = f'{user} entrou na sala'
+                print(inform_msg)
+                self.send_message(get_formated_message(inform_msg, '', 'send_message'), reader)
             elif json_msg['type'] == 'send_message':
                 self.send_message(msg.encode('utf-8'), reader)
                 print(get_message_from_json(json_msg))
@@ -56,7 +58,7 @@ class ChatRoom:
         msg = sys.stdin.readline()
         self.send_message(get_formated_message(msg[:-1], self.owner.name, 'send_message'), reader)
 
-    def send_message(self, msg:str, reader: socket.socket):
+    def send_message(self, msg:str, reader: socket.socket = None):
         for i, input in enumerate(self.inputs):
             if i  > 1 and reader != input:
                 input.sendall(msg)
@@ -74,7 +76,9 @@ class ChatRoom:
         if index:
             self.participants.remove(participant)
             del self.inputs[index+1]
-            print(f'Participante {participant} saiu da sala')
+            leave_message = f'Participante {participant} saiu da sala'
+            print(leave_message)
+            self.send_message(get_formated_message(leave_message, '', 'send_message'))
 
     def list_participants(self):
         print(f'---Sala {self.name} ({len(self.participants)}/{self.max_participants})---')
