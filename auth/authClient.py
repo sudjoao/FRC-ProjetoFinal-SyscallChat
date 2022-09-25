@@ -1,3 +1,4 @@
+from getpass import getpass
 import json
 import socket
 
@@ -11,12 +12,11 @@ class DefaultAuth:
             }
         }
         email = input("Insira seu e-mail: ")
-        pwd = input("Insira sua senha: ")
-        conf_pwd = input("Confirme sua senha: ")
+        pwd = getpass("Insira sua senha: ")
+        conf_pwd = getpass("Confirme sua senha: ")
         if conf_pwd == pwd:
             response["data"]["email"] = email
             response["data"]["pwd"] = pwd
-            # comunicação com o authServer aqui
             self.send_message_to_server(response)
             return 0
         else:
@@ -32,19 +32,10 @@ class DefaultAuth:
             }
         }
         email = input("Insira seu e-mail: ")
-        pwd = input("Insira sua senha: ")
+        pwd = getpass("Insira sua senha: ")
         response["data"]["email"] = email
         response["data"]["pwd"] = pwd
         self.send_message_to_server(response)
-
-    def disconnect(self) -> int:
-        response = {
-            "type": "disconnect",
-            "data" : {
-                "token": ""
-            }
-        }
-        # comunicação com o authServer aqui
 
     def send_message_to_server(self, message):
         tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

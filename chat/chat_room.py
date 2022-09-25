@@ -66,12 +66,12 @@ class ChatRoom:
                 input.sendall(msg)
 
     def join_room(self, reader: socket.socket):
+        connection, _ = reader.accept()
         if len(self.participants) < self.max_participants:
-            connection, _ = reader.accept()
             connection.setblocking(0)
             self.inputs.append(connection)
         else:
-            print(f"Essa sala já possui {self.max_participants} participantes. Espere alguém sair ou tente entrar em outra sala.")
+            connection.send(get_formated_message(f'Essa sala já possui {self.max_participants} participantes. Espere alguém sair ou tente entrar em outra sala.', '', 'disconnect'))
 
     def leave_room(self, participant: str):
         index = self.participants.index(participant)
