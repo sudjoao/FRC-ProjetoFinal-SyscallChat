@@ -53,6 +53,8 @@ class ChatRoom:
                 print(get_message_from_json(json_msg))
             elif json_msg['type'] == 'leave':
                 self.leave_room(json_msg['data']['user'])
+            elif json_msg['type'] == 'list':
+                self.list_participants(reader)
 
     def type_message(self, reader: socket.socket):
         msg = sys.stdin.readline()
@@ -80,9 +82,9 @@ class ChatRoom:
             print(leave_message)
             self.send_message(get_formated_message(leave_message, '', 'send_message'))
 
-    def list_participants(self):
-        print(f'---Sala {self.name} ({len(self.participants)}/{self.max_participants})---')
+    def list_participants(self, reader: socket.socket):
+        participant_list = f'---Sala {self.name} ({len(self.participants)}/{self.max_participants})---'
         for i, participant in enumerate(self.participants):
-            print(f'\tParticipante {i+1}: {participant}')
-        print('\n\n')
-
+            print(participant_list)
+            participant_list += f'\\nParticipante {i+1}: {participant}\\n'
+        reader.send(get_formated_message(participant_list, '', 'send_message'))

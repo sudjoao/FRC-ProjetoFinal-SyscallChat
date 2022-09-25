@@ -13,7 +13,6 @@ def main():
             channel = input('Digite o nome do canal\n')
             max_participants = int(input('Digite o máximo de participantes do canal\n'))
             room = ChatRoom(channel, max_participants, participant, port)
-            room.list_participants()
             room.init_chat()
         else:
             participant.join_chat(port)
