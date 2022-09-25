@@ -47,9 +47,9 @@ class ChatRoom:
                 self.participants.append(user)
                 print(f'{user} entrou na sala')
             elif json_msg['type'] == 'send_message':
-                self.send_message(msg, reader)
+                self.send_message(msg.encode('utf-8'), reader)
                 print(get_message_from_json(json_msg))
-            elif json_msg['type'] == 'disconnect':
+            elif json_msg['type'] == 'leave':
                 self.leave_room(json_msg['data']['user'])
 
     def type_message(self, reader: socket.socket):
@@ -73,7 +73,6 @@ class ChatRoom:
         index = self.participants.index(participant)
         if index:
             self.participants.remove(participant)
-            self.inputs[index+1].close()
             del self.inputs[index+1]
             print(f'Participante {participant} saiu da sala')
 

@@ -22,8 +22,9 @@ class Participant:
         self.chat_socket = socket.socket()
         self.chat_socket.connect(('localhost', room_port))
         self.send_join_message()
-        while True:
-            readers, _, _ = select.select([sys.stdin, self.chat_socket], [], [])
+        self.inputs = [sys.stdin, self.chat_socket]
+        while self.inputs:
+            readers, _, _ = select.select(self.inputs, [], [])
             for reader in readers:
                 if reader is self.chat_socket:
                     json_msg = json.loads(self.chat_socket.recv(1000).decode('utf-8'))
@@ -43,11 +44,13 @@ class Participant:
         self.chat_socket.send(message)
 
     def handle_command(self, command):
-        if command == '/disconnect':
-            self.chat_socket.send(get_formated_message('', self.name, 'disconnect'))
+        if command == '/leave':
+            self.chat_socket.send(get_formated_message('', self.name, 'leave'))
+            self.inputs = []
+            self.chat_socket.close()
         elif command == '/list':
             self.chat_socket.send(get_formated_message('', self.name, 'list'))
         elif command == '/help':
-            print('Esses são os comandos disponíveis:\n/help: mostra a lista de comandos disponíveis\n/disconnect: você sai do chat\n/list: mostra a lista de participantes no chat')
+            print('Esses são os comandos disponíveis:\n/help: mostra a lista de comandos disponíveis\n/leave: você sai do chat\n/list: mostra a lista de participantes no chat')
         else:
             print(f'{command} não é um comando válido')
