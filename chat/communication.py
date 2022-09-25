@@ -1,4 +1,4 @@
-from data import Data
+from chat.data import Data
 
 
 class CommunicationProtocol:

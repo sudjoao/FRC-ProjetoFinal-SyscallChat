@@ -2,8 +2,8 @@ import select
 import socket
 import sys
 import json
-from participant import Participant
-from utils import get_formated_message, get_message_from_json
+from chat.participant import Participant
+from chat.utils import get_formated_message, get_message_from_json
 
 
 class ChatRoom:

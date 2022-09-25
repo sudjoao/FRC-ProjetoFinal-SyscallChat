@@ -1,4 +1,5 @@
 import json
+import socket
 
 class DefaultAuth:
     def signup(self) -> int:
@@ -16,6 +17,7 @@ class DefaultAuth:
             response["data"]["email"] = email
             response["data"]["pwd"] = pwd
             # comunicação com o authServer aqui
+            self.send_message_to_server(response)
             return 0
         else:
             print("Confirmação de senha inválida\n")
@@ -33,7 +35,7 @@ class DefaultAuth:
         pwd = input("Insira sua senha: ")
         response["data"]["email"] = email
         response["data"]["pwd"] = pwd
-        # comunicação com o authServer aqui
+        self.send_message_to_server(response)
 
     def disconnect(self) -> int:
         response = {
@@ -43,3 +45,13 @@ class DefaultAuth:
             }
         }
         # comunicação com o authServer aqui
+
+    def send_message_to_server(self, message):
+        tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        dest = ('localhost', 8000)
+        tcp.connect(dest)
+        tcp.send(json.dumps(message).encode('utf-8'))
+        msg_rec = tcp.recv(1024)
+        msg_rec = json.loads(msg_rec)
+        print(msg_rec['data']['message'])
+        tcp.close()

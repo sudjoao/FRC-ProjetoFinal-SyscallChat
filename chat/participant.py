@@ -2,10 +2,10 @@ import json
 import socket
 import select
 import sys
-from communication import CommunicationProtocol
+from chat.communication import CommunicationProtocol
 
-from data import Data
-from utils import  get_formated_message, get_message_from_json
+from chat.data import Data
+from chat.utils import  get_formated_message, get_message_from_json
 
 class Participant:
     name: str

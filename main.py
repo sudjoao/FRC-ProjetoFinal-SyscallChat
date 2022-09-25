@@ -1,8 +1,15 @@
-from chat_room import ChatRoom
-from participant import Participant
-
+from auth.authClient import DefaultAuth
+from chat.participant import Participant
+from chat.chat_room import ChatRoom
 
 def main():
+    print('Bem vindo ao bate papo uol')
+    auth = DefaultAuth()
+    option = int(input('Digite 1 para se cadastrar ou 2 para entrar com uma conta já existente'))
+    if option == 1:
+        auth.signup()
+    else:
+        auth.login()
     name = input('Digite o nome do participante\n')
     participant = Participant(name)
     while True:

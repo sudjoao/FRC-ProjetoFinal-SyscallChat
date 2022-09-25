@@ -1,5 +1,5 @@
-from communication import CommunicationProtocol
-from data import Data
+from chat.communication import CommunicationProtocol
+from chat.data import Data
 
 
 def get_message_from_json(json_msg) -> str:

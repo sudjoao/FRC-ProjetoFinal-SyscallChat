@@ -8,18 +8,21 @@ from uuid import uuid4
 
 class AuthServer:
     sock: socket.socket
-    credentials: dict
-    valid_tokens: list
-    inputs: list
-    conn_map: dict
+    credentials: dict = {}
+    valid_tokens: list = []
+    inputs: list = []
+    conn_map: dict = {}
     port: int = 8000
 
     def __init__(self, credentials: dict = {}) -> None:
         self.start(credentials)
+
+    def start_server(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.setblocking(0)
         self.sock.bind(('localhost', self.port))
-        self.inputs = [sys.stdin, self.sock]
+        self.sock.listen(100)
+        self.inputs = [self.sock]
         while self.inputs:
             readers, _, _ = select.select(self.inputs, [], [])
             for reader in readers:
@@ -27,7 +30,8 @@ class AuthServer:
                     self.connect_to_server(reader)
                 elif isinstance(reader, socket.socket):
                     self.read_message(reader)
-    
+
+
     def __del__(self) -> None:
         self.commit()
         for input in self.inputs:
@@ -71,17 +75,18 @@ class AuthServer:
                     )
                 else:
                     response["data"]["message"] = "Comando inválido"
-
-                self.send_message(json.dumps(response), reader)
+                print(response)
+                reader.send(json.dumps(response).encode('utf-8'))
             except:
-                self.send_message(json.dumps(response), reader)
-    
+                print(json.dumps(response).encode('utf-8'))
+                reader.send(json.dumps(response).encode('utf-8'))
+
     def connect_to_server(self, reader: socket.socket):
         connection, address = reader.accept()
         connection.setblocking(0)
         self.conn_map[address] = connection
         self.inputs.append(connection)
-    
+
     def disconnect_from_server(self, token: str, reader: socket.socket):
         conn = self.conn_map.pop(reader.getpeername())
         self.valid_tokens.remove(token)
@@ -90,19 +95,21 @@ class AuthServer:
         reader.close()
 
     def start(self, credentials: dict = {}) -> None:
-        try:
-            with open("credentials.txt", "r") as f:
-                self.credentials = json.load(f)
-                self.credentials.update(credentials)
-                print(f"start credentials: {self.credentials}")
-            f.close()
-        except FileNotFoundError as error:
-            print(
-                f"{error.strerror}\n" +
-                "Nenhuma credencial cadastrada até o momento.\n" +
-                "Arquivos de credenciais será criado."
-            )
-            with open('credentials.txt', 'w'): pass
+        if credentials:
+            print('wtf')
+            try:
+                with open("credentials.txt", "r") as f:
+                    self.credentials = json.load(f)
+                    self.credentials.update(credentials)
+                    print(f"start credentials: {self.credentials}")
+                f.close()
+            except FileNotFoundError as error:
+                print(
+                    f"{error.strerror}\n" +
+                    "Nenhuma credencial cadastrada até o momento.\n" +
+                    "Arquivos de credenciais será criado."
+                )
+                with open('credentials.txt', 'w'): pass
 
     def commit(self) -> None:
         with open("credentials.txt", "w") as f:
@@ -129,7 +136,7 @@ class AuthServer:
             response["data"]["status"] = 0
             response["data"]["message"] = "Conta criada com sucesso!"
             rand_token = uuid4()
-            response["data"]["token"] = rand_token
+            response["data"]["token"] = rand_token.hex
             self.valid_tokens.append(rand_token)
             return response
         else:
@@ -149,7 +156,7 @@ class AuthServer:
         auth = pwd.encode()
         auth_hash = hashlib.md5(auth).hexdigest()
         if(
-            email in self.credentials.keys() and 
+            email in self.credentials.keys() and
             auth_hash == self.credentials[email]
         ):
             response["data"]["status"] = 0
