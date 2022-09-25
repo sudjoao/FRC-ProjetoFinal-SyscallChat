@@ -11,5 +11,4 @@ def get_message_from_json(json_msg) -> str:
 def get_formated_message(message, name, method):
     data = Data(name, message)
     communication_protocol = CommunicationProtocol(method, data)
-    print(f'{communication_protocol}')
     return f'{communication_protocol}'.encode('utf-8')

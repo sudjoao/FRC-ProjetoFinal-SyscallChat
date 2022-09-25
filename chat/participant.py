@@ -11,9 +11,11 @@ class Participant:
     name: str
     chat_socket: socket.socket
     room_port: int
+    token: str
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, token: str) -> None:
         self.name = name
+        self.token = token
 
     def __str__(self) -> str:
         return f'{self.name}'

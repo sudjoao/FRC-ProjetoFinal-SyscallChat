@@ -162,7 +162,7 @@ class AuthServer:
             response["data"]["status"] = 0
             response["data"]["message"] = "Login realizado com sucesso!"
             rand_token = uuid4()
-            response["data"]["token"] = rand_token
+            response["data"]["token"] = rand_token.hex
             self.valid_tokens.append(rand_token)
             return response
         else:

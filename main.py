@@ -7,11 +7,21 @@ def main():
     auth = DefaultAuth()
     option = int(input('Digite 1 para se cadastrar ou 2 para entrar com uma conta já existente'))
     if option == 1:
-        auth.signup()
+        while True:
+            try:
+                token = auth.signup()
+                break
+            except Exception as e:
+                print(e)
     else:
-        auth.login()
+        while True:
+            try:
+                token = auth.login()
+                break
+            except Exception as e:
+                print(e)
     name = input('Digite o nome do participante\n')
-    participant = Participant(name)
+    participant = Participant(name, token)
     while True:
         option = input('Digite a opcao:\n1. Iniciar Sala\n2. Entrar em uma sala\n')
 
