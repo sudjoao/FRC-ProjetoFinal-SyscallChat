@@ -4,7 +4,7 @@ import sys
 import hashlib
 import json
 
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 class AuthServer:
     sock: socket.socket
@@ -70,8 +70,9 @@ class AuthServer:
                     response["data"]["status"] = 0
                     response["data"]["message"] = "Desconectado"
                 elif command["type"] == "validate":
+                    print(command["data"]["token"])
                     response["data"]["status"] = self.validate_token(
-                        command["data"]["token"],
+                        command["data"]["token"]
                     )
                 else:
                     response["data"]["message"] = "Comando inválido"
@@ -171,4 +172,5 @@ class AuthServer:
             return response
 
     def validate_token(self, token):
-        return 0 if (token in self.valid_tokens) else -1
+        print(self.valid_tokens)
+        return 0 if (UUID(hex=token, version=4) in self.valid_tokens) else -1

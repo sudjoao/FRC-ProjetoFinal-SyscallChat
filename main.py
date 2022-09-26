@@ -26,7 +26,11 @@ def main():
     participant = Participant(name, token)
     while True:
         option = int(input('Digite a opcao:\n1. Iniciar Sala\n2. Entrar em uma sala:\n'))
+        print(participant.token)
+        auth.validate_token(participant.token)
         if option == 0:
+            print('Desconectando conta...')
+            auth.close_connection()
             break
         elif option > 0 and option < 3:
             port = int(input('Digite a porta do canal\n'))
