@@ -33,6 +33,7 @@ class Participant:
 
         self.send_join_message()
         self.inputs = [sys.stdin, self.chat_socket]
+        self.show_instructions()
         while self.inputs:
             readers, _, _ = select.select(self.inputs, [], [])
             for reader in readers:

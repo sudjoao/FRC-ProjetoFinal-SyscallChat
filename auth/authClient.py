@@ -56,7 +56,6 @@ class DefaultAuth:
         self.tcp.send(json.dumps(message).encode('utf-8'))
         msg_rec = self.tcp.recv(1024)
         msg_rec = json.loads(msg_rec)
-        print(msg_rec)
         if msg_rec['data']['status'] == 0:
             return msg_rec['data']['token']
         else:
