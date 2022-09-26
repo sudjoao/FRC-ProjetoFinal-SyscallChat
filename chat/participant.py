@@ -39,7 +39,7 @@ class Participant:
                 if reader is self.chat_socket:
                     json_msg = json.loads(self.chat_socket.recv(1000).decode('utf-8'))
                     print(get_message_from_json(json_msg))
-                    if json_msg["type"] == 'disconnect':
+                    if json_msg["type"] == 'leave':
                         self.inputs = []
                         self.chat_socket.close()
                 else:

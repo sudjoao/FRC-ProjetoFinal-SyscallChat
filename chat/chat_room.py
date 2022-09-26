@@ -78,7 +78,7 @@ class ChatRoom:
             self.inputs.append(connection)
             connection.send(get_formated_message(f'Você entrou na sala {self.name}', '', 'connect'))
         else:
-            connection.send(get_formated_message(f'Essa sala já possui {self.max_participants} participantes. Espere alguém sair ou tente entrar em outra sala.', '', 'disconnect'))
+            connection.send(get_formated_message(f'Essa sala já possui {self.max_participants} participantes. Espere alguém sair ou tente entrar em outra sala.', '', 'leave'))
 
     def leave_room(self, participant: str):
         index = self.participants.index(participant)
@@ -106,7 +106,7 @@ class ChatRoom:
             print('Fechando sala...')
             for i, input in enumerate(self.inputs):
                 if i > 1:
-                    input.send(get_formated_message('A sala foi fechada, logo você foi removido.', '', 'disconnect'))
+                    input.send(get_formated_message('A sala foi fechada, logo você foi removido.', '', 'leave'))
             self.inputs = []
             sleep(1)
             self.chat_socket.close()
