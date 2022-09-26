@@ -4,7 +4,10 @@ from chat.chat_room import ChatRoom
 
 def main():
     print('Bem vindo ao bate papo uol')
-    auth = DefaultAuth()
+    try:
+        auth = DefaultAuth()
+    except Exception:
+        print("Não foi possível conectar ao servidor de autenticação. Leia as instruções do README e tente novamente")
     while True:
         option = int(input('Digite 1 para se cadastrar ou 2 para entrar com uma conta já existente:\n'))
         if option == 1:

@@ -39,7 +39,10 @@ python3 main.py
 
 Para cada usuário é necessário instanciar um programa python de chat.
 
-### Rodando o projeto
+## Possíveis problemas
+### Servidor de autenticação
+#### Porta já em uso
+Ao tentar subir o servidor de autenticação, caso você se depare com um erro de porta já em uso, você pode alterar a porta, nos arquivos **authClient.py** e **authServer.py**, para a da sua preferência.
 
 ## Requisitos
 * A criação de salas virtuais de bate-papo com nome da sala e limite de parcipantes
