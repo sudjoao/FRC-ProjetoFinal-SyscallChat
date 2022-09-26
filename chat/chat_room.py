@@ -2,6 +2,7 @@ import select
 import socket
 import sys
 import json
+from time import sleep
 from chat.participant import Participant
 from chat.utils import get_formated_message, get_message_from_json
 
@@ -28,6 +29,8 @@ class ChatRoom:
         self.chat_socket.bind(('localhost', self.port))
         self.chat_socket.listen(self.max_participants)
         self.inputs = [sys.stdin, self.chat_socket]
+        print('Sala iniciada com sucesso')
+        self.show_instructions()
         while self.inputs:
             readers, _, _ = select.select(self.inputs, [], [])
             for reader in readers:
@@ -57,8 +60,11 @@ class ChatRoom:
                 self.list_participants(reader)
 
     def type_message(self, reader: socket.socket):
-        msg = sys.stdin.readline()
-        self.send_message(get_formated_message(msg[:-1], self.owner.name, 'send_message'), reader)
+        msg = sys.stdin.readline()[:-1]
+        if msg[0] == "/":
+            self.handle_commands(msg)
+        else:
+            self.send_message(get_formated_message(msg, self.owner.name, 'send_message'), reader)
 
     def send_message(self, msg:str, reader: socket.socket = None):
         for i, input in enumerate(self.inputs):
@@ -70,6 +76,7 @@ class ChatRoom:
         if len(self.participants) < self.max_participants:
             connection.setblocking(0)
             self.inputs.append(connection)
+            connection.send(get_formated_message(f'Você entrou na sala {self.name}', '', 'connect'))
         else:
             connection.send(get_formated_message(f'Essa sala já possui {self.max_participants} participantes. Espere alguém sair ou tente entrar em outra sala.', '', 'disconnect'))
 
@@ -82,9 +89,33 @@ class ChatRoom:
             print(leave_message)
             self.send_message(get_formated_message(leave_message, '', 'send_message'))
 
-    def list_participants(self, reader: socket.socket):
+    def list_participants(self, reader: socket.socket = None):
         participant_list = f'---Sala {self.name} ({len(self.participants)}/{self.max_participants})---'
         for i, participant in enumerate(self.participants):
-            print(participant_list)
             participant_list += f'\\nParticipante {i+1}: {participant}\\n'
-        reader.send(get_formated_message(participant_list, '', 'send_message'))
+        if reader:
+            reader.send(get_formated_message(participant_list, '', 'send_message'))
+        else:
+            print(participant_list.replace('\\n', '\n'))
+
+    def show_instructions(self):
+        print('Esses são os comandos disponíveis:\n/help: mostra a lista de comandos disponíveis\n/close: você fecha a sala de chat\n/list: mostra a lista de participantes no chat.\nAlém disso para enviar uma mensagem basta digitá-la normalmente e apertar enter para enviar')
+
+    def handle_commands(self, command):
+        if command == '/close':
+            print('Fechando sala...')
+            for i, input in enumerate(self.inputs):
+                if i > 1:
+                    input.send(get_formated_message('A sala foi fechada, logo você foi removido.', '', 'disconnect'))
+            self.inputs = []
+            sleep(1)
+            self.chat_socket.close()
+
+        elif command == '/list':
+            self.list_participants()
+
+        elif command == '/help':
+            self.show_instructions()
+
+        else:
+            print(f'{command} não é um comando válido')

@@ -22,7 +22,15 @@ class Participant:
 
     def join_chat(self, room_port: int):
         self.chat_socket = socket.socket()
-        self.chat_socket.connect(('localhost', room_port))
+        while True:
+            try:
+                self.chat_socket.connect(('localhost', room_port))
+                break
+            except Exception:
+                print(f'Sala com a porta {room_port} não existe')
+                room_port = int(input('Digite uma porta de uma sala válida:\n'))
+
+
         self.send_join_message()
         self.inputs = [sys.stdin, self.chat_socket]
         while self.inputs:
@@ -56,6 +64,9 @@ class Participant:
         elif command == '/list':
             self.chat_socket.send(get_formated_message('', self.name, 'list'))
         elif command == '/help':
-            print('Esses são os comandos disponíveis:\n/help: mostra a lista de comandos disponíveis\n/leave: você sai do chat\n/list: mostra a lista de participantes no chat')
+            self.show_instructions()
         else:
             print(f'{command} não é um comando válido')
+
+    def show_instructions(self):
+        print('Esses são os comandos disponíveis:\n/help: mostra a lista de comandos disponíveis\n/leave: você sai do chat\n/list: mostra a lista de participantes no chat.\nAlém disso para enviar uma mensagme basta digitá-la normalmente e apertar enter para enviar')
