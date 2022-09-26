@@ -11,8 +11,6 @@
 ## Tecnologias
 * Python
 
-## Como rodar
-
 ### Instalando Python
 #### Linux
 
@@ -25,11 +23,27 @@ sudo apt-get install python3.6
 Basta baixar o executável referente a seu sistema operacional no link abaixo:
 [Python Install](https://www.python.org/downloads/)
 
+## Como rodar
+### Servidor de autenticação
+
+Para rodar o servidor de autenticação, você deve acessar a pasta *auth/* e lá dentro executar o seguinte comando:
+```
+python3 main.py
+```
+
+### Chat
+Para rodar o chat basta entrar na raiz do projeto e executar o seguinte comando:
+```
+python3 main.py
+```
+
+Para cada usuário é necessário instanciar um programa python de chat.
+
 ### Rodando o projeto
 
 ## Requisitos
-* A criação de salas virtuais de bate-papo com nome da sala e limite de parcipantes 
-* Listar parcipantes de uma determinada sala 
-* Permir ingresso de clientes, com um idenficador, em uma sala existente, de acordo com o limite admido para a sala 
-* Saída de clientes de uma sala em que estava parcipando 
-* Diálogo entre os clientes das salas 
+* A criação de salas virtuais de bate-papo com nome da sala e limite de parcipantes
+* Listar parcipantes de uma determinada sala
+* Permir ingresso de clientes, com um idenficador, em uma sala existente, de acordo com o limite admido para a sala
+* Saída de clientes de uma sala em que estava parcipando
+* Diálogo entre os clientes das salas
